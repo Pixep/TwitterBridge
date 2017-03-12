@@ -6,10 +6,15 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC",
+  "author": {
+    "name": "Adrien Leravat",
+    "url": "https://github.com/Pixep"
+  },
+  "license": "Apache-2.0",
   "dependencies": {
     "express": "^4.14.0",
+    "html-entities": "^1.2.0",
+    "request": "^2.79.0",
     "twitter": "^1.7.0"
   }
 }
