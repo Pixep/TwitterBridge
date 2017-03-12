@@ -4,6 +4,7 @@ var Request = require('request')
 var Entities = require('html-entities').XmlEntities
 var app = Express()
 
+// Twitter parameters from environment variables
 var twitterAccount = new Twitter({
   consumer_key: process.env.TWITTER_CONSUMER_KEY,
   consumer_secret: process.env.TWITTER_CONSUMER_SECRET,
@@ -11,24 +12,11 @@ var twitterAccount = new Twitter({
   access_token_secret: process.env.TWITTER_ACCESS_TOKEN_SECRET
 });
 
-var params = {count: 30}
-app.get('/:pass/tweets_old', function (req, res) {
-  if (req.params.pass != "1645328")
-  {
-    res.end()
-    return
-  }
-
-  twitterAccount.get('statuses/home_timeline', params, function(error, tweets, response) {
-    if (error) {
-      console.log('Tweeter timeline error ! %j', error)
-      res.send('')
-    } else {
-      res.json(tweets)
-    }
-  })
-})
-
+/**
+ * @brief Twitter timeline
+ * @return Twitter timeline content in JSON
+ */
+var twitterTimelineParams = {count: 30}
 app.get('/:pass/tweets', function (req, res) {
   if (req.params.pass != "1645328")
   {
@@ -36,7 +24,7 @@ app.get('/:pass/tweets', function (req, res) {
     return
   }
 
-  twitterAccount.get('statuses/home_timeline', params, function(error, tweets, response) {
+  twitterAccount.get('statuses/home_timeline', twitterTimelineParams, function(error, tweets, response) {
     if (error) {
       console.log('Tweeter timeline error ! %j', error)
       res.send('')
@@ -60,8 +48,14 @@ app.get('/:pass/tweets', function (req, res) {
   })
 })
 
+/**
+ * @brief Twitter image proxy
+ * @return Twitter target image through nodeJS
+ */
 app.get('/tweetImage/*', function (req, res) {
   var proxyUrl = req.url;
+
+  // Make sure we only serve images
   if (! (proxyUrl.endsWith('.png') || proxyUrl.endsWith('.jpg') || proxyUrl.endsWith('.jpeg') || proxyUrl.endsWith('.gif')))
   {
     console.log('Incorrect proxy url' + proxyUrl)
@@ -70,10 +64,11 @@ app.get('/tweetImage/*', function (req, res) {
 
   console.log('Proxying: ' + proxyUrl)
   proxyUrl = proxyUrl.replace('/tweetImage/', 'http://')
-  console.log('To: ' + proxyUrl)
+
   Request.get(proxyUrl).pipe(res)
 })
 
+// Run the server
 app.listen(8585, function () {
   console.log('Twitter proxy running on 8585 !')
 })
