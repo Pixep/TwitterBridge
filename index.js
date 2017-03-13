@@ -19,28 +19,43 @@ function queryAuthorized(req) {
     return (req.params.pass == "1645328")
 }
 
+/**
+ * @brief Parses twiter timeline content
+ */
 function parseTwitterTimeline(error, tweets, response) {
     if (error) {
         console.log('Tweeter timeline error ! %j', error)
         return
     }
 
-    var entities = new Entities();
     for(var i = 0; i < tweets.length; i++)
     {
-        var tweet = tweets[i];
-        if (tweet.entities && tweet.entities.urls[0])
-        {
-            var tweetUrl = tweet.entities.urls[0].url;
-            tweet.text = tweet.text.replace(tweetUrl, '');
-        }
-        tweet.text = tweet.text.replace(/https:\/\/t\.co\/[a-z0-9]+$/gi, '');
-        tweet.text = entities.decode(tweet.text);
-        tweet.text = tweet.text.replace(/\n\n/g, '\n');
-        tweets[i] = tweet;
+        tweets[i] = formatTweet(tweets[i])
     }
 
     return tweets
+}
+
+/**
+ * brief Format tweet by decoding it and removing tweet url
+ */
+function formatTweet(tweet) {
+    // Identify and remove tweets urls
+    if (tweet.entities && tweet.entities.urls[0])
+    {
+        var tweetUrl = tweet.entities.urls[0].url;
+        tweet.text = tweet.text.replace(tweetUrl, '');
+    }
+    tweet.text = tweet.text.replace(/https:\/\/t\.co\/[a-z0-9]+$/gi, '');
+
+    // Remove double line break
+    tweet.text = tweet.text.replace(/\n\n/g, '\n');
+
+    // Decode HTML entities
+    var entities = new Entities();
+    tweet.text = entities.decode(tweet.text);
+
+    return tweet;
 }
 
 /**
