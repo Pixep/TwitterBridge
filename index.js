@@ -13,46 +13,63 @@ var twitterAccount = new Twitter({
 });
 
 /**
+ * @brief Returns true if query is authorized
+ */
+function queryAuthorized(req) {
+    return (req.params.pass == "1645328")
+}
+
+function parseTwitterTimeline(error, tweets, response) {
+    if (error) {
+        console.log('Tweeter timeline error ! %j', error)
+        return
+    }
+
+    var entities = new Entities();
+    for(var i = 0; i < tweets.length; i++)
+    {
+        var tweet = tweets[i];
+        if (tweet.entities && tweet.entities.urls[0])
+        {
+            var tweetUrl = tweet.entities.urls[0].url;
+            tweet.text = tweet.text.replace(tweetUrl, '');
+        }
+        tweet.text = tweet.text.replace(/https:\/\/t\.co\/[a-z0-9]+$/gi, '');
+        tweet.text = entities.decode(tweet.text);
+        tweet.text = tweet.text.replace(/\n\n/g, '\n');
+        tweets[i] = tweet;
+    }
+
+    return tweets
+}
+
+/**
  * @brief Twitter timeline
  * @return Twitter timeline content in JSON
  */
 var twitterTimelineParams = {count: 30}
 app.get('/:pass/tweets', function (req, res) {
-    if (req.params.pass != "1645328")
+    if ( ! queryAuthorized(req))
     {
         res.end()
         return
     }
 
     twitterAccount.get('statuses/home_timeline', twitterTimelineParams, function(error, tweets, response) {
-        if (error) {
-            console.log('Tweeter timeline error ! %j', error)
+        var tweets = parseTwitterTimeline(error, tweets, response)
+        if (tweets == undefined) {
             res.send('')
-        } else {
-            var entities = new Entities();
-            for(var i = 0; i < tweets.length; i++)
-            {
-                var tweet = tweets[i];
-                if (tweet.entities && tweet.entities.urls[0])
-                {
-                    var tweetUrl = tweet.entities.urls[0].url;
-                    tweet.text = tweet.text.replace(tweetUrl, '');
-                }
-                tweet.text = tweet.text.replace(/https:\/\/t\.co\/[a-z0-9]+$/gi, '');
-                tweet.text = entities.decode(tweet.text);
-                tweet.text = tweet.text.replace(/\n\n/g, '\n');
-                tweets[i] = tweet;
-            }
-            res.json(tweets)
         }
+
+        res.json(tweets)
     })
 })
 
 /**
  * @brief Twitter image proxy
  * @return Twitter target image through nodeJS
- app.get('/tweetImage/*', function (req, res) {
  */
+ app.get('/tweetImage/*', function (req, res) {
     var proxyUrl = req.url;
 
     // Make sure we only serve images
