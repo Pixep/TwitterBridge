@@ -4,11 +4,11 @@
   "description": "A simple twitter proxy",
   "main": "index.js",
   "repository": {
-      "type": "git",
-      "url": "https://github.com/Pixep/twitter-bridge.git"
+    "type": "git",
+    "url": "https://github.com/Pixep/twitter-bridge.git"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha spec"
   },
   "author": {
     "name": "Adrien Leravat",
@@ -20,5 +20,10 @@
     "html-entities": "^1.2.0",
     "request": "^2.79.0",
     "twitter": "^1.7.0"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^3.2.0",
+    "sinon": "^2.0.0"
   }
 }
