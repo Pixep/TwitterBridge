@@ -1,4 +1,6 @@
 # twitter-bridge
+<img src="https://travis-ci.org/Pixep/twitter-bridge.svg?branch=master"></img>
+
 A simple Node JS proxy to retrieve a Twitter timeline from a specific account, in JSON, without requiring OAuth.
 Also applies some tweets formatting.
 
