@@ -6,32 +6,41 @@ var app = Express();
 var port = 8585;
 
 /**
+* @brief Returns true if query is authorized
+*/
+function queryAuthorized (req) {
+  return (req.params.pass == "1645328")
+}
+
+/**
  * @brief Twitter timeline
  * @return Twitter timeline content in JSON
  */
 app.get('/:pass/tweets', function (req, res) {
-    if ( ! Timeline.queryAuthorized(req))
-    {
-        res.end();
-        return;
+  if ( !queryAuthorized(req))
+  {
+    res.end();
+    return;
+  }
+
+  Timeline.getTimeline(function(error, timeline) {
+    if (timeline == undefined) {
+      res.send('');
     }
 
-    Timeline.getTimeline(function(error, timeline) {
-      if (timeline == undefined) {
-        res.send('');
-      }
-
-      res.json(timeline);
-    });
+    res.json(timeline);
+  });
 })
 
 /**
  * @brief Twitter image proxy
  * @return Twitter target image through nodeJS
  */
- app.get('/tweetImage/*', function (req, res) {
+app.get('/tweetImage/*', function (req, res) {
    ImageProxy.proxyImage(req, res);
 })
+
+Timeline.assertEnvironmentSet();
 
 // Run the server
 app.listen(port, function () {
