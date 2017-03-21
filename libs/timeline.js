@@ -39,7 +39,7 @@ module.exports = {
   getTimeline: function (callback) {
     module.exports.assertEnvironmentSet();
 
-    var twitterTimelineParams = {count: 30}
+    var twitterTimelineParams = {count: 50}
     module.exports.twitter.get('statuses/home_timeline', twitterTimelineParams, function(error, tweets, response) {
       if (error)
         callback(error, null);
@@ -53,8 +53,20 @@ module.exports = {
   * @brief Parses twiter timeline content
   */
   parseTwitterTimeline: function (tweets) {
-    for(var i = 0; i < tweets.length; i++)
+    var tweeterAccounts = new Array();
+    var i = 0;
+
+    // Keep only 1 message per user
+    while (i < tweets.length) {
+      if (tweets[i].user == null || tweeterAccounts.includes(tweets[i].user.id_str)) {
+        tweets.splice(i, 1);
+        continue;
+      }
+
       tweets[i] = module.exports.formatTweet(tweets[i]);
+      tweeterAccounts.push(tweets[i].user.id_str);
+      ++i;
+    }
 
     return tweets;
   },
