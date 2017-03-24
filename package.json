@@ -8,7 +8,8 @@
     "url": "https://github.com/Pixep/twitter-bridge.git"
   },
   "scripts": {
-    "test": "mocha spec"
+    "test": "mocha spec",
+    "coverage": "istanbul cover ./node_modules/mocha/bin/_mocha spec --report lcovonly -- -R spec && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage"
   },
   "author": {
     "name": "Adrien Leravat",
@@ -26,6 +27,7 @@
     "coveralls": "^2.12.0",
     "istanbul": "^0.4.5",
     "mocha": "^3.2.0",
+    "mocha-with-coverage": "0.0.2",
     "sinon": "^2.0.0"
   }
 }
