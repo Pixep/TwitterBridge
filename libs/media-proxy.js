@@ -14,13 +14,17 @@ class CachedVideo {
   }
 
   deleteFile() {
-    fs.unlink(this.filepath(), function(err) {
-      if (err) console.log(err);
+    var videoToDelete = this.filepath();
+    fs.unlink(videoToDelete, function(err) {
+      if (err)
+        console.log(err);
+      else
+        console.log('Deleted video ' + videoToDelete)
     })
   }
 
   refreshLastUsage() {
-    this.lastUsage = Date.now();
+    this.lastUsageDate = Date.now();
   }
 
   filepath() {
@@ -68,9 +72,20 @@ class MediaCache {
     return null;
   }
 
+  _deleteCachedVideo(cachedVideo) {
+    var index = this.videos.indexOf(cachedVideo);
+
+    cachedVideo.deleteFile();
+
+    if (index >= 0)
+      this.videos.splice(index, 1);
+  }
+
   videoAsGif(url) {
     if (!url.endsWith('.mp4'))
       return '';
+
+    this.deleteUnusedVideos();
 
     var filename = url.replace(/^.*[\\\/]/, '');
     var filenameGif = filenameToGif(filename);
@@ -83,6 +98,15 @@ class MediaCache {
     }
 
     return filenameGif;
+  }
+
+  deleteUnusedVideos() {
+    var now = Date.now();
+    var maxInactiveTime = 60 * (60 * 1000); // 60mins
+    for (var i = 0; i < this.videos.length; i++) {
+      if ((this.videos[i].lastUsageDate - now) >= maxInactiveTime)
+        _deleteCachedVideo(this.videos[i]);
+    }
   }
 
   cacheVideoAsGif(url, filename) {
