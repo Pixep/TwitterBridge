@@ -1,5 +1,5 @@
 var Express = require('express');
-var ImageProxy = require('./libs/image-proxy');
+var MediaProxy = require('./libs/media-proxy');
 var Timeline = require('./libs/timeline');
 
 var app = Express();
@@ -37,10 +37,11 @@ app.get('/:pass/tweets', function (req, res) {
  * @return Twitter target image through nodeJS
  */
 app.get('/tweetImage/*', function (req, res) {
-   ImageProxy.proxyImage(req, res);
+   MediaProxy.serveImage(req, res);
 })
 
 Timeline.assertEnvironmentSet();
+MediaProxy.mediaCache.videoAsGif('https://video.twimg.com/tweet_video/C7jrQUoW0AA2P5H.mp4');
 
 // Run the server
 app.listen(port, function () {
