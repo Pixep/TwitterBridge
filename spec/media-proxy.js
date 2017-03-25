@@ -1,4 +1,4 @@
-var mediaProxy = require('../libs/image-proxy');
+var mediaProxy = require('../libs/media-proxy');
 var should = require('chai').should();
 var expect = require('chai').expect;
 var sinon = require('sinon');
@@ -47,6 +47,11 @@ describe('Video caching', function () {
     videoFilepath.should.equal('');
     var videoFilepath = mediaProxy.mediaCache.video('other-video.gif');
     videoFilepath.should.equal(mediaProxy.mediaCache.path + 'other-video.gif');
+    done();
+  });
+
+  it('should delete unused videos', function (done) {
+    mediaProxy.mediaCache.deleteUnusedVideos();
     done();
   });
 })
