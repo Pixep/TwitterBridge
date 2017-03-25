@@ -122,7 +122,7 @@ var mediaCache = new MediaCache('./tmp/videos/');
 /**
 * @brief Proxies an image from tweeter
 */
-function _proxyImage (req, res) {
+function _serveImage (req, res) {
   var proxyUrl = req.url;
 
   // Make sure we only serve images
@@ -139,6 +139,6 @@ function _proxyImage (req, res) {
 }
 
 module.exports = {
-  proxyImage: _proxyImage,
+  serveImage: _serveImage,
   mediaCache: mediaCache
 }
