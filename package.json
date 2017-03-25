@@ -8,6 +8,7 @@
     "url": "https://github.com/Pixep/twitter-bridge.git"
   },
   "scripts": {
+    "start": ". ./testNode.sh",
     "test": "mocha spec",
     "coverage": "istanbul cover ./node_modules/mocha/bin/_mocha spec --report lcovonly -- -R spec",
     "coveralls": "npm run-script coverage && cat coverage/lcov.info | ./node_modules/.bin/coveralls"
