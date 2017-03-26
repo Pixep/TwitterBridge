@@ -38,6 +38,10 @@ class MediaCache {
     this.path = cachePath;
     this.videos = [];
 
+    // Quick hack, should preferably use mkdirp
+    if (!fs.existsSync('./tmp')){
+        fs.mkdirSync('./tmp');
+    }
     // Create videos directory
     if (!fs.existsSync(this.path)){
         fs.mkdirSync(this.path);
