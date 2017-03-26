@@ -1,5 +1,6 @@
 var Entities = require('html-entities').XmlEntities
 var Twitter = require('twitter')
+var MediaProxy = require('./media-proxy');
 
 /**
 * @brief Update account information from environment
@@ -25,6 +26,22 @@ function _assertEnvironmentSet () {
     throw new Error("One or more of the following environment variables is not set: " +
           "TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET " +
           "TWITTER_ACCESS_TOKEN_KEY, TWITTER_ACCESS_TOKEN_SECRET");
+}
+
+function _includeVideoAsGif(tweet) {
+  if (tweet.extended_entities && tweet.extended_entities.media) {
+    for (var i = 0; i < tweet.extended_entities.media.length; ++i) {
+      if (tweet.extended_entities.media[i].video_info &&
+          tweet.extended_entities.media[i].video_info.variants) {
+        // Add an 'animatedGif' field
+        var mediaUrl = tweet.extended_entities.media[i].video_info.variants[0].url;
+        if (mediaUrl && mediaUrl.endsWith('.mp4')) {
+          tweet.animated_gif_url = process.env.LOCAL_MEDIA_URL + MediaProxy.mediaCache.videoAsGif(mediaUrl);
+          break;
+        }
+      }
+    }
+  }
 }
 
 module.exports = {
@@ -67,6 +84,10 @@ module.exports = {
       tweeterAccounts.push(tweets[i].user.id_str);
       ++i;
     }
+
+    // Convert video to GIF and include video Url
+    for (var i = 0; i < tweets.length; ++i)
+      _includeVideoAsGif(tweets[i]);
 
     return tweets;
   },

@@ -57,5 +57,9 @@ typings/
 # dotenv environment variables file
 .env
 
+# tmp folder used for files conversion and caching
+tmp
+
+# Custom run scripts
 startNode.sh
 testNode.sh
