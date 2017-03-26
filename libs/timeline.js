@@ -53,7 +53,7 @@ module.exports = {
   * @brief Returns tweeter timeline
   * @param callback(error, tweets, response)
   */
-  getTimeline: function (callback) {
+  getTimeline: function (includeRetweets, callback) {
     module.exports.assertEnvironmentSet();
 
     var twitterTimelineParams = {count: 50}
@@ -61,33 +61,48 @@ module.exports = {
       if (error)
         callback(error, null);
 
-      module.exports.parseTwitterTimeline(tweets);
+      if (!includeRetweets)
+        module.exports.removeRetweets(tweets);
+
+      module.exports.limitTweetsPerUser(tweets);
+
+      for (var i = 0; i < tweets.length; ++i) {
+        module.exports.formatTweet(tweets[i]);
+        _includeVideoAsGif(tweets[i]);
+      }
+
       callback(null, tweets);
     })
   },
 
   /**
-  * @brief Parses twiter timeline content
+  * @brief Remove retweets
   */
-  parseTwitterTimeline: function (tweets) {
+  removeRetweets: function (tweets) {
+    // Keep only 1 message per user
+    var i = tweets.length;
+    while (i--) {
+      if (tweets[i].text.startsWith('RT @'))
+        tweets.splice(i, 1);
+    }
+  },
+
+  /**
+  * @brief Keep only X tweets per user
+  */
+  limitTweetsPerUser: function (tweets) {
     var tweeterAccounts = new Array();
-    var i = 0;
 
     // Keep only 1 message per user
-    while (i < tweets.length) {
+    var i = tweets.length;
+    while (i--) {
       if (tweets[i].user == null || tweeterAccounts.includes(tweets[i].user.id_str)) {
         tweets.splice(i, 1);
-        continue;
       }
-
-      module.exports.formatTweet(tweets[i]);
-      tweeterAccounts.push(tweets[i].user.id_str);
-      ++i;
+      else {
+        tweeterAccounts.push(tweets[i].user.id_str);
+      }
     }
-
-    // Convert video to GIF and include video Url
-    for (var i = 0; i < tweets.length; ++i)
-      _includeVideoAsGif(tweets[i]);
   },
 
   /**

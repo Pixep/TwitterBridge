@@ -22,6 +22,13 @@ var testData = [
       { text: "tweet#4 user 5",  user: { id_str: "5"  } },
       { text: "tweet#5 user 5",  user: { id_str: "5"  } },
       { text: "tweet#6 user 5",  user: { id_str: "5"  } }]
+  },
+  {
+    expectedCount: 2,
+    tweets: [
+      { text: "tweet#1 user 12", user: { id_str: "12" } },
+      { text: "RT @Robert tweet#2 user 18", user: { id_str: "18" } },
+      { text: "tweet#3 user 18", user: { id_str: "18" } }]
   }
 ];
 
@@ -49,7 +56,7 @@ describe('Retrieve tweets timeline', function () {
         callback(new Error("Error"), null, null);
       });
 
-      Timeline.getTimeline(function(error, tweets) {
+      Timeline.getTimeline(false, function(error, tweets) {
         expect(error).to.exist;
         expect(tweets).to.be.null;
         stub.restore();
@@ -63,7 +70,7 @@ describe('Retrieve tweets timeline', function () {
         callback(null, testData[currentTestSet].tweets, null);
       });
 
-      Timeline.getTimeline(function(error, tweets, response) {
+      Timeline.getTimeline(false, function(error, tweets, response) {
         expect(error).to.be.null;
         expect(tweets).to.exist;
         expect(tweets).to.have.lengthOf(testData[currentTestSet].expectedCount);
@@ -78,11 +85,26 @@ describe('Retrieve tweets timeline', function () {
         callback(null, testData[currentTestSet].tweets, null);
       });
 
-      Timeline.getTimeline(function(error, tweets) {
+      Timeline.getTimeline(false, function(error, tweets) {
         expect(error).to.be.null;
         expect(tweets).to.exist;
         expect(tweets).to.have.lengthOf(testData[currentTestSet].expectedCount);
-        stub.restore(); 
+        stub.restore();
+        done();
+      });
+    });
+
+    it('should remove retweets', function (done) {
+      currentTestSet = 2;
+      var stub = sinon.stub(Timeline.twitter, "get").callsFake(function(path, params, callback) {
+        callback(null, testData[currentTestSet].tweets, null);
+      });
+
+      Timeline.getTimeline(false, function(error, tweets) {
+        expect(error).to.be.null;
+        expect(tweets).to.exist;
+        expect(tweets).to.have.lengthOf(testData[currentTestSet].expectedCount);
+        stub.restore();
         done();
       });
     });

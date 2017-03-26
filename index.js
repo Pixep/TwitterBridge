@@ -23,7 +23,7 @@ app.get('/:pass/tweets', function (req, res) {
     return;
   }
 
-  Timeline.getTimeline(function(error, timeline) {
+  Timeline.getTimeline(false, function(error, timeline) {
     if (timeline == undefined) {
       res.send('');
     }
