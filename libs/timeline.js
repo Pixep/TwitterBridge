@@ -61,8 +61,8 @@ module.exports = {
       if (error)
         callback(error, null);
 
-      var timeline = module.exports.parseTwitterTimeline(tweets);
-      callback(null, timeline);
+      module.exports.parseTwitterTimeline(tweets);
+      callback(null, tweets);
     })
   },
 
@@ -80,7 +80,7 @@ module.exports = {
         continue;
       }
 
-      tweets[i] = module.exports.formatTweet(tweets[i]);
+      module.exports.formatTweet(tweets[i]);
       tweeterAccounts.push(tweets[i].user.id_str);
       ++i;
     }
@@ -88,8 +88,6 @@ module.exports = {
     // Convert video to GIF and include video Url
     for (var i = 0; i < tweets.length; ++i)
       _includeVideoAsGif(tweets[i]);
-
-    return tweets;
   },
 
   /**
@@ -110,7 +108,5 @@ module.exports = {
     // Decode HTML entities
     var entities = new Entities();
     tweet.text = entities.decode(tweet.text);
-
-    return tweet;
   }
 }

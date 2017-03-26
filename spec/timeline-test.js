@@ -86,7 +86,7 @@ describe('Formatting', function () {
         text: "My tweet\n\nbreaks\n\nlines !"
       }
 
-      testTweet = Timeline.formatTweet(testTweet);
+      Timeline.formatTweet(testTweet);
       testTweet.text.should.equal("My tweet\nbreaks\nlines !");
       done();
     });
@@ -96,7 +96,7 @@ describe('Formatting', function () {
         text: "My tweet https://t.co/iHu2eg8h"
       }
 
-      testTweet = Timeline.formatTweet(testTweet);
+      Timeline.formatTweet(testTweet);
       testTweet.text.should.equal("My tweet ");
       done();
     });
@@ -106,7 +106,7 @@ describe('Formatting', function () {
         text: "My &amp;&#212; &#174;"
       }
 
-      testTweet = Timeline.formatTweet(testTweet);
+      Timeline.formatTweet(testTweet);
       testTweet.text.should.equal("My &Ô ®");
       done();
     });
