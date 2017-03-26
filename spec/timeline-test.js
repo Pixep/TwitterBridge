@@ -45,9 +45,14 @@ describe('Timeline module', function () {
 describe('Retrieve tweets timeline', function () {
   describe('#getTimeline()', function() {
     it('should return an error if authentication fails', function (done) {
+      var stub = sinon.stub(Timeline.twitter, "get").callsFake(function(path, params, callback) {
+        callback(new Error("Error"), null, null);
+      });
+
       Timeline.getTimeline(function(error, tweets) {
         expect(error).to.exist;
         expect(tweets).to.be.null;
+        stub.restore();
         done();
       });
     });
@@ -62,17 +67,22 @@ describe('Retrieve tweets timeline', function () {
         expect(error).to.be.null;
         expect(tweets).to.exist;
         expect(tweets).to.have.lengthOf(testData[currentTestSet].expectedCount);
+        stub.restore();
         done();
       });
     });
 
     it('should keep only one tweet per author/user', function (done) {
       currentTestSet = 1;
+      var stub = sinon.stub(Timeline.twitter, "get").callsFake(function(path, params, callback) {
+        callback(null, testData[currentTestSet].tweets, null);
+      });
 
       Timeline.getTimeline(function(error, tweets) {
         expect(error).to.be.null;
         expect(tweets).to.exist;
         expect(tweets).to.have.lengthOf(testData[currentTestSet].expectedCount);
+        stub.restore(); 
         done();
       });
     });

@@ -156,14 +156,16 @@ function _serveImage (req, res) {
   // Make sure we only serve images
   if (! (proxyUrl.endsWith('.png') || proxyUrl.endsWith('.jpg') || proxyUrl.endsWith('.jpeg') || proxyUrl.endsWith('.gif')))
   {
-    console.log('Incorrect proxy url' + proxyUrl)
-    res.end()
+    console.log('Incorrect proxy url' + proxyUrl);
+    res.end();
   }
+  else
+  {
+    console.log('Proxying: ' + proxyUrl)
+    proxyUrl = proxyUrl.replace('/tweetImage/', 'http://')
 
-  console.log('Proxying: ' + proxyUrl)
-  proxyUrl = proxyUrl.replace('/tweetImage/', 'http://')
-
-  request.get(proxyUrl).pipe(res)
+    request.get(proxyUrl).pipe(res)
+  }
 }
 
 module.exports = {

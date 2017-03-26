@@ -3,6 +3,38 @@ var should = require('chai').should();
 var expect = require('chai').expect;
 var sinon = require('sinon');
 
+describe('Image proxy', function () {
+  /*it('should fails if the path does not points to an image', function (done) {
+    var req = {
+      url: "/tweetImage/t.co/Ojdz8hH.php"
+    };
+    var res = {
+      end: function () {
+        done();
+      }
+    };
+
+    mediaProxy.serveImage(req, res);
+  });
+  it('should work for images', function (done) {
+    var req = {
+      url: "/tweetImage/t.co/Ojdz8hH.png"
+    };
+    var res = {
+      called: false,
+      on: function(data) {
+        if (!this.called)
+          done();
+
+        this.called = true;
+      },
+      end: function() {}
+    };
+
+    mediaProxy.serveImage(req, res);
+  });*/
+});
+
 describe('Video caching', function () {
   it('should fails if not an mp4', function (done) {
     var gifFilename = mediaProxy.mediaCache.videoAsGif('https://video.twimg.com/tweet_video/some-video.mp3');
