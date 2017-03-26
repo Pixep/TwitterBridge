@@ -41,7 +41,15 @@ app.get('/tweetImage/*', function (req, res) {
 })
 
 Timeline.assertEnvironmentSet();
-MediaProxy.mediaCache.videoAsGif('https://video.twimg.com/tweet_video/C7jrQUoW0AA2P5H.mp4');
+
+if ( ! process.env.SERVER_NAME.endsWith('/'))
+  process.env.SERVER_NAME = process.env.SERVER_NAME + '/';
+
+var localMediaPath = 'video';
+process.env.LOCAL_MEDIA_URL = process.env.SERVER_NAME + localMediaPath + '/';
+
+// Serve videos as Gif
+app.use('/'+localMediaPath, Express.static(MediaProxy.mediaCache.path));
 
 // Run the server
 app.listen(port, function () {
