@@ -8,27 +8,27 @@ var testData = [
   {
     expectedCount: 4,
     tweets: [
-      { text: "tweet#1 user 5",  user: { id_str: "5" } },
-      { text: "tweet#2 user 7",  user: { id_str: "7" } },
-      { text: "tweet#3 user 10", user: { id_str: "10" } },
-      { text: "tweet#4 user 13", user: { id_str: "13"  } }]
+      { text: "tweet#1 user 1",  user: { id_str: "1" } },
+      { text: "tweet#2 user 2",  user: { id_str: "2" } },
+      { text: "tweet#3 user 3", user: { id_str: "3" } },
+      { text: "tweet#4 user 4", user: { id_str: "4"  } }]
   },
   {
-    expectedCount: 3,
+    expectedCount: 5,
     tweets: [
-      { text: "tweet#1 user 12", user: { id_str: "12" } },
-      { text: "tweet#2 user 18", user: { id_str: "18" } },
-      { text: "tweet#3 user 18", user: { id_str: "18" } },
-      { text: "tweet#4 user 5",  user: { id_str: "5"  } },
-      { text: "tweet#5 user 5",  user: { id_str: "5"  } },
-      { text: "tweet#6 user 5",  user: { id_str: "5"  } }]
+      { text: "tweet#1 user 1", user: { id_str: "1" } },
+      { text: "tweet#2 user 2", user: { id_str: "2" } },
+      { text: "tweet#3 user 2", user: { id_str: "2" } },
+      { text: "tweet#4 user 3",  user: { id_str: "3"  } },
+      { text: "tweet#5 user 3",  user: { id_str: "3"  } },
+      { text: "tweet#6 user 3",  user: { id_str: "3"  } }]
   },
   {
     expectedCount: 2,
     tweets: [
-      { text: "tweet#1 user 12", user: { id_str: "12" } },
-      { text: "RT @Robert tweet#2 user 18", user: { id_str: "18" } },
-      { text: "tweet#3 user 18", user: { id_str: "18" } }]
+      { text: "tweet#1 user 1", user: { id_str: "1" } },
+      { text: "RT @Robert tweet#2 user 2", user: { id_str: "2" } },
+      { text: "tweet#3 user 3", user: { id_str: "3" } }]
   }
 ];
 

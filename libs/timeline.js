@@ -64,7 +64,7 @@ module.exports = {
       if (!includeRetweets)
         module.exports.removeRetweets(tweets);
 
-      module.exports.limitTweetsPerUser(tweets);
+      module.exports.limitTweetsPerUser(2, tweets);
 
       for (var i = 0; i < tweets.length; ++i) {
         module.exports.formatTweet(tweets[i]);
@@ -90,17 +90,35 @@ module.exports = {
   /**
   * @brief Keep only X tweets per user
   */
-  limitTweetsPerUser: function (tweets) {
-    var tweeterAccounts = new Array();
+  limitTweetsPerUser: function (maxCount, tweets) {
+    var users = new Array();
+    var findUser = function (id) {
+      for(var i=0; i < users.length; i++)
+        if (users[i].id == id)
+          return users[i];
+
+      return null;
+    }
 
     // Keep only 1 message per user
-    var i = tweets.length;
-    while (i--) {
-      if (tweets[i].user == null || tweeterAccounts.includes(tweets[i].user.id_str)) {
+    var i = 0;
+    while (i < tweets.length) {
+      var user = findUser(tweets[i].user.id_str);
+      if (user == null) {
+        user = {
+          id: tweets[i].user.id_str,
+          tweetCount: 1
+        };
+        users.push(user);
+      }
+
+      // Remove tweet, or keep and increment count
+      if (user.tweetCount > maxCount) {
         tweets.splice(i, 1);
       }
       else {
-        tweeterAccounts.push(tweets[i].user.id_str);
+        user.tweetCount++;
+        i++;
       }
     }
   },
