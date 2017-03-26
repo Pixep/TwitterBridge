@@ -44,6 +44,17 @@ function _includeVideoAsGif(tweet) {
   }
 }
 
+/**
+ * Shuffles array in place. ES6 version
+ * @param {Array} a items The array containing the items.
+ */
+function shuffleArray(a) {
+    for (let i = a.length; i; i--) {
+        let j = Math.floor(Math.random() * i);
+        [a[i - 1], a[j]] = [a[j], a[i - 1]];
+    }
+}
+
 module.exports = {
   twitter: _twitterFromEnvironment(),
   assertEnvironmentSet: _assertEnvironmentSet,
@@ -53,23 +64,35 @@ module.exports = {
   * @brief Returns tweeter timeline
   * @param callback(error, tweets, response)
   */
-  getTimeline: function (includeRetweets, callback) {
+  getTimeline: function (timelineParams, callback) {
+    timelineParams.maxTweetsPerUser = timelineParams.maxTweetsPerUser || 2;
+    timelineParams.removeRetweets = timelineParams.removeRetweets || false;
+    timelineParams.maxTweets = timelineParams.maxTweets || 20;
+    timelineParams.shuffleTweets = timelineParams.shuffleTweets || false;
+
     module.exports.assertEnvironmentSet();
 
-    var twitterTimelineParams = {count: 100}
+    var twitterTimelineParams = {count: 200}
     module.exports.twitter.get('statuses/home_timeline', twitterTimelineParams, function(error, tweets, response) {
       if (error)
         callback(error, null);
 
-      if (!includeRetweets)
+      if (timelineParams.removeRetweets)
         module.exports.removeRetweets(tweets);
 
-      module.exports.limitTweetsPerUser(2, tweets);
+      if (timelineParams.shuffleTweets)
+        shuffleArray(tweets);
+
+      module.exports.limitTweetsPerUser(timelineParams.maxTweetsPerUser, tweets);
 
       for (var i = 0; i < tweets.length; ++i) {
         module.exports.formatTweet(tweets[i]);
         _includeVideoAsGif(tweets[i]);
       }
+
+      // Remove tweets to match the maximum set
+      if (tweets.length > timelineParams.maxTweets)
+        tweets.splice(timelineParams.maxTweets, tweets.length-timelineParams.maxTweets);
 
       callback(null, tweets);
     })
