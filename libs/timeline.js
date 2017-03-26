@@ -56,7 +56,7 @@ module.exports = {
   getTimeline: function (includeRetweets, callback) {
     module.exports.assertEnvironmentSet();
 
-    var twitterTimelineParams = {count: 50}
+    var twitterTimelineParams = {count: 100}
     module.exports.twitter.get('statuses/home_timeline', twitterTimelineParams, function(error, tweets, response) {
       if (error)
         callback(error, null);
