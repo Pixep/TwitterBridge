@@ -93,8 +93,41 @@ describe('Video caching', function () {
     done();
   });
 
-  it('should delete unused videos', function (done) {
+  it('should delete older videos only', function (done) {
     mediaProxy.mediaCache.deleteUnusedVideos();
+
+    var videoFilepath = mediaProxy.mediaCache.video('other-video.gif');
+    videoFilepath.should.equal(mediaProxy.mediaCache.path + 'other-video.gif');
     done();
+  });
+
+  describe('#_cachedVideo()', function () {
+    it('should return a specific cached video', function (done) {
+
+      var video = mediaProxy.mediaCache._cachedVideo('non-existing-video.gif');
+      expect(video).to.be.null;
+      video = mediaProxy.mediaCache._cachedVideo('other-video.gif');
+      expect(video).to.exist;
+      done();
+    })
+  });
+
+  describe('#_deleteCachedVideo()', function () {
+    it('should delete a specific cached video', function (done) {
+      video = mediaProxy.mediaCache._cachedVideo('other-video.gif');
+      expect(video).to.exist;
+
+      // Verify it calls delete
+      var deleteSpy = sinon.spy();
+      var stub = sinon.stub(video, "deleteFile", deleteSpy);
+      mediaProxy.mediaCache._deleteCachedVideo(video);
+      expect(deleteSpy.called).to.be.true;
+
+      // Verify it was removed from the list
+      video = mediaProxy.mediaCache._cachedVideo('other-video.gif');
+      expect(video).to.be.null;
+
+      done();
+    })
   });
 })
