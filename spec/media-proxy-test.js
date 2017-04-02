@@ -2,9 +2,21 @@ var mediaProxy = require('../libs/media-proxy');
 var should = require('chai').should();
 var expect = require('chai').expect;
 var sinon = require('sinon');
+var mockery = require('mockery');
 
 describe('Image proxy', function () {
-  /*it('should fails if the path does not points to an image', function (done) {
+  before(function() {
+    mockery.enable({
+      warnOnReplace: false,
+      warnOnUnregistered: false,
+      useCleanCache: true
+    });
+
+    requestStub = sinon.stub();
+    mockery.registerMock('request', requestStub)
+  });
+
+  it('should fails if the path does not points to an image', function (done) {
     var req = {
       url: "/tweetImage/t.co/Ojdz8hH.php"
     };
@@ -16,6 +28,7 @@ describe('Image proxy', function () {
 
     mediaProxy.serveImage(req, res);
   });
+
   it('should work for images', function (done) {
     var req = {
       url: "/tweetImage/t.co/Ojdz8hH.png"
@@ -32,16 +45,14 @@ describe('Image proxy', function () {
     };
 
     mediaProxy.serveImage(req, res);
-  });*/
+  });
+
+  after(function() {
+    mockery.disable();
+  });
 });
 
 describe('Video caching', function () {
-  it('should fails if not an mp4', function (done) {
-    var gifFilename = mediaProxy.mediaCache.videoAsGif('https://video.twimg.com/tweet_video/some-video.mp3');
-    gifFilename.should.equal('');
-    done();
-  });
-
   it('should fails if not an mp4', function (done) {
     var gifFilename = mediaProxy.mediaCache.videoAsGif('https://video.twimg.com/tweet_video/some-video.mp3');
     gifFilename.should.equal('');
