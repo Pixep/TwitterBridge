@@ -2,9 +2,21 @@ var mediaProxy = require('../libs/media-proxy');
 var should = require('chai').should();
 var expect = require('chai').expect;
 var sinon = require('sinon');
+var mockery = require('mockery');
 
 describe('Image proxy', function () {
-  /*it('should fails if the path does not points to an image', function (done) {
+  before(function() {
+    mockery.enable({
+      warnOnReplace: false,
+      warnOnUnregistered: false,
+      useCleanCache: true
+    });
+
+    requestStub = sinon.stub();
+    mockery.registerMock('request', requestStub)
+  });
+
+  it('should fails if the path does not points to an image', function (done) {
     var req = {
       url: "/tweetImage/t.co/Ojdz8hH.php"
     };
@@ -16,6 +28,7 @@ describe('Image proxy', function () {
 
     mediaProxy.serveImage(req, res);
   });
+
   it('should work for images', function (done) {
     var req = {
       url: "/tweetImage/t.co/Ojdz8hH.png"
@@ -32,16 +45,14 @@ describe('Image proxy', function () {
     };
 
     mediaProxy.serveImage(req, res);
-  });*/
+  });
+
+  after(function() {
+    mockery.disable();
+  });
 });
 
 describe('Video caching', function () {
-  it('should fails if not an mp4', function (done) {
-    var gifFilename = mediaProxy.mediaCache.videoAsGif('https://video.twimg.com/tweet_video/some-video.mp3');
-    gifFilename.should.equal('');
-    done();
-  });
-
   it('should fails if not an mp4', function (done) {
     var gifFilename = mediaProxy.mediaCache.videoAsGif('https://video.twimg.com/tweet_video/some-video.mp3');
     gifFilename.should.equal('');
@@ -82,8 +93,41 @@ describe('Video caching', function () {
     done();
   });
 
-  it('should delete unused videos', function (done) {
+  it('should delete older videos only', function (done) {
     mediaProxy.mediaCache.deleteUnusedVideos();
+
+    var videoFilepath = mediaProxy.mediaCache.video('other-video.gif');
+    videoFilepath.should.equal(mediaProxy.mediaCache.path + 'other-video.gif');
     done();
+  });
+
+  describe('#_cachedVideo()', function () {
+    it('should return a specific cached video', function (done) {
+
+      var video = mediaProxy.mediaCache._cachedVideo('non-existing-video.gif');
+      expect(video).to.be.null;
+      video = mediaProxy.mediaCache._cachedVideo('other-video.gif');
+      expect(video).to.exist;
+      done();
+    })
+  });
+
+  describe('#_deleteCachedVideo()', function () {
+    it('should delete a specific cached video', function (done) {
+      video = mediaProxy.mediaCache._cachedVideo('other-video.gif');
+      expect(video).to.exist;
+
+      // Verify it calls delete
+      var deleteSpy = sinon.spy();
+      var stub = sinon.stub(video, "deleteFile", deleteSpy);
+      mediaProxy.mediaCache._deleteCachedVideo(video);
+      expect(deleteSpy.called).to.be.true;
+
+      // Verify it was removed from the list
+      video = mediaProxy.mediaCache._cachedVideo('other-video.gif');
+      expect(video).to.be.null;
+
+      done();
+    })
   });
 })

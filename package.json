@@ -32,6 +32,7 @@
     "istanbul": "^0.4.5",
     "mocha": "^3.2.0",
     "mocha-with-coverage": "0.0.2",
+    "mockery": "^2.0.0",
     "sinon": "^2.0.0"
   }
 }

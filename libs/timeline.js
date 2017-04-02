@@ -44,6 +44,17 @@ function _includeVideoAsGif(tweet) {
   }
 }
 
+/**
+ * Shuffles array in place. ES6 version
+ * @param {Array} a items The array containing the items.
+ */
+function shuffleArray(a) {
+    for (let i = a.length; i; i--) {
+        let j = Math.floor(Math.random() * i);
+        [a[i - 1], a[j]] = [a[j], a[i - 1]];
+    }
+}
+
 module.exports = {
   twitter: _twitterFromEnvironment(),
   assertEnvironmentSet: _assertEnvironmentSet,
@@ -53,41 +64,86 @@ module.exports = {
   * @brief Returns tweeter timeline
   * @param callback(error, tweets, response)
   */
-  getTimeline: function (callback) {
+  getTimeline: function (timelineParams, callback) {
+    timelineParams.maxTweetsPerUser = timelineParams.maxTweetsPerUser || 2;
+    timelineParams.removeRetweets = timelineParams.removeRetweets || false;
+    timelineParams.maxTweets = timelineParams.maxTweets || 20;
+    timelineParams.shuffleTweets = timelineParams.shuffleTweets || false;
+
     module.exports.assertEnvironmentSet();
 
-    var twitterTimelineParams = {count: 50}
+    var twitterTimelineParams = {count: 200}
     module.exports.twitter.get('statuses/home_timeline', twitterTimelineParams, function(error, tweets, response) {
       if (error)
         callback(error, null);
 
-      module.exports.parseTwitterTimeline(tweets);
+      if (timelineParams.removeRetweets)
+        module.exports.removeRetweets(tweets);
+
+      if (timelineParams.shuffleTweets)
+        shuffleArray(tweets);
+
+      module.exports.limitTweetsPerUser(timelineParams.maxTweetsPerUser, tweets);
+
+      for (var i = 0; i < tweets.length; ++i) {
+        module.exports.formatTweet(tweets[i]);
+        _includeVideoAsGif(tweets[i]);
+      }
+
+      // Remove tweets to match the maximum set
+      if (tweets.length > timelineParams.maxTweets)
+        tweets.splice(timelineParams.maxTweets, tweets.length-timelineParams.maxTweets);
+
       callback(null, tweets);
     })
   },
 
   /**
-  * @brief Parses twiter timeline content
+  * @brief Remove retweets
   */
-  parseTwitterTimeline: function (tweets) {
-    var tweeterAccounts = new Array();
-    var i = 0;
-
+  removeRetweets: function (tweets) {
     // Keep only 1 message per user
-    while (i < tweets.length) {
-      if (tweets[i].user == null || tweeterAccounts.includes(tweets[i].user.id_str)) {
+    var i = tweets.length;
+    while (i--) {
+      if (tweets[i].text.startsWith('RT @'))
         tweets.splice(i, 1);
-        continue;
-      }
+    }
+  },
 
-      module.exports.formatTweet(tweets[i]);
-      tweeterAccounts.push(tweets[i].user.id_str);
-      ++i;
+  /**
+  * @brief Keep only X tweets per user
+  */
+  limitTweetsPerUser: function (maxCount, tweets) {
+    var users = new Array();
+    var findUser = function (id) {
+      for(var i=0; i < users.length; i++)
+        if (users[i].id == id)
+          return users[i];
+
+      return null;
     }
 
-    // Convert video to GIF and include video Url
-    for (var i = 0; i < tweets.length; ++i)
-      _includeVideoAsGif(tweets[i]);
+    // Keep only 1 message per user
+    var i = 0;
+    while (i < tweets.length) {
+      var user = findUser(tweets[i].user.id_str);
+      if (user == null) {
+        user = {
+          id: tweets[i].user.id_str,
+          tweetCount: 1
+        };
+        users.push(user);
+      }
+
+      // Remove tweet, or keep and increment count
+      if (user.tweetCount > maxCount) {
+        tweets.splice(i, 1);
+      }
+      else {
+        user.tweetCount++;
+        i++;
+      }
+    }
   },
 
   /**

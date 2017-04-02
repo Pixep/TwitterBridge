@@ -23,7 +23,13 @@ app.get('/:pass/tweets', function (req, res) {
     return;
   }
 
-  Timeline.getTimeline(function(error, timeline) {
+  var params = {
+    maxTweetsPerUser: 2,
+    removeRetweets: false,
+    maxTweets: 20,
+    shuffleTweets: true
+  }
+  Timeline.getTimeline(params, function(error, timeline) {
     if (timeline == undefined) {
       res.send('');
     }
