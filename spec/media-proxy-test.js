@@ -119,7 +119,7 @@ describe('Video caching', function () {
 
       // Verify it calls delete
       var deleteSpy = sinon.spy();
-      var stub = sinon.stub(video, "deleteFile", deleteSpy);
+      var stub = sinon.stub(video, "deleteFile").callsFake(deleteSpy);
       mediaProxy.mediaCache._deleteCachedVideo(video);
       expect(deleteSpy.called).to.be.true;
 
