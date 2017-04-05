@@ -38,16 +38,18 @@ app.get('/:pass/tweets', function (req, res) {
     // Copy media of retweets/quotes to the tweet itself
     for (var i = 0; i < timeline.length; i++) {
       timeline[i].user.name = timeline[i].user.name.replace("Internet of Shit", "Internet of Stuff");
-      
-      if (typeof timeline[i].retweeted_status !== 'undefined'
-        && typeof timeline[i].retweeted_status.entities !== 'undefined'
-        && typeof timeline[i].retweeted_status.entities.media !== 'undefined')
-        timeline[i].entities.media = timeline[i].retweeted_status.entities.media;
 
-      if (typeof timeline[i].quoted_status !== 'undefined'
-        && typeof timeline[i].quoted_status.entities !== 'undefined'
-        && typeof timeline[i].quoted_status.entities.media !== 'undefined')
-        timeline[i].entities.media = timeline[i].quoted_status.entities.media;
+      if (typeof timeline[i].entities.media === 'undefined') {
+        if (typeof timeline[i].retweeted_status !== 'undefined'
+          && typeof timeline[i].retweeted_status.entities !== 'undefined'
+          && typeof timeline[i].retweeted_status.entities.media !== 'undefined')
+          timeline[i].entities.media = timeline[i].retweeted_status.entities.media;
+
+        if (typeof timeline[i].quoted_status !== 'undefined'
+          && typeof timeline[i].quoted_status.entities !== 'undefined'
+          && typeof timeline[i].quoted_status.entities.media !== 'undefined')
+          timeline[i].entities.media = timeline[i].quoted_status.entities.media;
+      }
     }
 
     res.json(timeline);
