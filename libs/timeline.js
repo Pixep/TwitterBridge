@@ -29,15 +29,37 @@ function _assertEnvironmentSet () {
 }
 
 function _includeVideoAsGif(tweet) {
-  if (tweet.extended_entities && tweet.extended_entities.media) {
-    for (var i = 0; i < tweet.extended_entities.media.length; ++i) {
-      if (tweet.extended_entities.media[i].video_info &&
-          tweet.extended_entities.media[i].video_info.variants) {
-        // Add an 'animatedGif' field
-        var mediaUrl = tweet.extended_entities.media[i].video_info.variants[0].url;
-        if (mediaUrl && mediaUrl.endsWith('.mp4')) {
-          tweet.animated_gif_url = process.env.LOCAL_MEDIA_URL + MediaProxy.mediaCache.videoAsGif(mediaUrl);
-          break;
+  for (var i = 0; i < 3; i++) {
+    var extendedEntities = null;
+
+    if (i === 0) {
+      extendedEntities = tweet.extended_entities;
+    }
+    else if (i === 1) {
+      if (typeof tweet.retweeted_status !== 'undefined')
+        extendedEntities = tweet.retweeted_status.extendedEntities;
+      else
+        break;
+    }
+    else if (i === 2) {
+      if (typeof tweet.quoted_status !== 'undefined')
+        extendedEntities = tweet.quoted_status.extendedEntities;
+      else
+        break;
+    }
+
+    if (extendedEntities && extendedEntities.media) {
+      for (var i = 0; i < extendedEntities.media.length; ++i) {
+        if (extendedEntities.media[i].video_info &&
+            extendedEntities.media[i].video_info.variants) {
+          // Add an 'animatedGif' field
+          var mediaUrl = extendedEntities.media[i].video_info.variants[0].url;
+
+          // Add URL and return on success
+          if (mediaUrl && mediaUrl.endsWith('.mp4')) {
+            tweet.animated_gif_url = process.env.LOCAL_MEDIA_URL + MediaProxy.mediaCache.videoAsGif(mediaUrl);
+            return;
+          }
         }
       }
     }
