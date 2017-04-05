@@ -97,10 +97,9 @@ function _getTimeline (timelineParams, callback) {
 * @brief Remove retweets
 */
 function _removeRetweets (tweets) {
-  // Keep only 1 message per user
   var i = tweets.length;
   while (i--) {
-    if (tweets[i].text.startsWith('RT @'))
+    if (typeof tweets[i].retweeted_status !== 'undefined')
       tweets.splice(i, 1);
   }
 }

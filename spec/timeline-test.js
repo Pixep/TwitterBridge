@@ -14,7 +14,7 @@ var testData = [
   },
   {
     tweets: [
-      { text: "RT @tweet#1 user 1", user: { id_str: "1" } },
+      { text: "tweet#1 user 1", user: { id_str: "1" }, retweeted_status: { text: "Original text"}  },
       { text: "tweet#2 user 2", user: { id_str: "2" } },
       { text: "tweet#3 user 2", user: { id_str: "2" } },
       { text: "tweet#4 user 3",  user: { id_str: "3"  } },
@@ -24,7 +24,7 @@ var testData = [
   {
     tweets: [
       { text: "tweet#1 user 1", user: { id_str: "1" } },
-      { text: "RT @Robert tweet#2 user 2", user: { id_str: "2" } },
+      { text: "tweet#2 user 2", user: { id_str: "2" }, retweeted_status: { text: "Original text"} },
       { text: "tweet#3 user 3", user: { id_str: "3" } }]
   },
   {
