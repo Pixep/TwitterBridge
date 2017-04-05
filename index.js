@@ -26,12 +26,18 @@ app.get('/:pass/tweets', function (req, res) {
   var params = {
     maxTweetsPerUser: 2,
     removeRetweets: false,
+    removeQuotedTweets: false,
     maxTweets: 20,
     shuffleTweets: true
   }
   Timeline.getTimeline(params, function(error, timeline) {
     if (timeline == undefined) {
       res.send('');
+    }
+
+    // Copy media of retweets/quotes to the tweet itself
+    for (var i = 0; i < timeline.length; i++) {
+
     }
 
     res.json(timeline);

@@ -63,3 +63,4 @@ tmp
 # Custom run scripts
 startNode.sh
 testNode.sh
+setup-env.sh
