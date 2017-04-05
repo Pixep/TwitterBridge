@@ -62,6 +62,7 @@ function shuffleArray(a) {
 function _getTimeline (timelineParams, callback) {
   timelineParams.maxTweetsPerUser = timelineParams.maxTweetsPerUser || 2;
   timelineParams.removeRetweets = timelineParams.removeRetweets || false;
+  timelineParams.removeQuotedTweets = timelineParams.removeQuotedTweets || false;
   timelineParams.maxTweets = timelineParams.maxTweets || 20;
   timelineParams.shuffleTweets = timelineParams.shuffleTweets || false;
 
@@ -74,6 +75,9 @@ function _getTimeline (timelineParams, callback) {
 
     if (timelineParams.removeRetweets)
       _removeRetweets(tweets);
+
+    if (timelineParams.removeQuotedTweets)
+      _removeQuotedTweets(tweets);
 
     if (timelineParams.shuffleTweets)
       shuffleArray(tweets);
@@ -100,6 +104,17 @@ function _removeRetweets (tweets) {
   var i = tweets.length;
   while (i--) {
     if (typeof tweets[i].retweeted_status !== 'undefined')
+      tweets.splice(i, 1);
+  }
+}
+
+/**
+* @brief Remove quoted tweets
+*/
+function _removeQuotedTweets (tweets) {
+  var i = tweets.length;
+  while (i--) {
+    if (typeof tweets[i].quoted_status !== 'undefined')
       tweets.splice(i, 1);
   }
 }
@@ -170,4 +185,5 @@ module.exports = {
   formatTweet: _formatTweet,
   limitTweetsPerUser: _limitTweetsPerUser,
   removeRetweets: _removeRetweets,
+  removeQuotedTweets: _removeQuotedTweets
 }
