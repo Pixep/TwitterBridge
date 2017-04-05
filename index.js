@@ -37,7 +37,17 @@ app.get('/:pass/tweets', function (req, res) {
 
     // Copy media of retweets/quotes to the tweet itself
     for (var i = 0; i < timeline.length; i++) {
+      timeline[i].user.name = timeline[i].user.name.replace("Internet of Shit", "Internet of Stuff");
+      
+      if (typeof timeline[i].retweeted_status !== 'undefined'
+        && typeof timeline[i].retweeted_status.entities !== 'undefined'
+        && typeof timeline[i].retweeted_status.entities.media !== 'undefined')
+        timeline[i].entities.media = timeline[i].retweeted_status.entities.media;
 
+      if (typeof timeline[i].quoted_status !== 'undefined'
+        && typeof timeline[i].quoted_status.entities !== 'undefined'
+        && typeof timeline[i].quoted_status.entities.media !== 'undefined')
+        timeline[i].entities.media = timeline[i].quoted_status.entities.media;
     }
 
     res.json(timeline);
@@ -58,7 +68,7 @@ if ( ! process.env.SERVER_NAME.endsWith('/'))
   process.env.SERVER_NAME = process.env.SERVER_NAME + '/';
 
 var localMediaPath = 'video';
-process.env.LOCAL_MEDIA_URL = process.env.SERVER_NAME + localMediaPath + '/';
+process.env.LOCAL_MEDIA_URL = 'http://' + process.env.SERVER_NAME + localMediaPath + '/';
 
 // Serve videos as Gif
 app.use('/'+localMediaPath, Express.static(MediaProxy.mediaCache.path));
