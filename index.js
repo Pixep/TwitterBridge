@@ -4,9 +4,23 @@ var qr = require('qr-image');
 var MediaProxy = require('./libs/media-proxy');
 var Timeline = require('./libs/timeline');
 var fs = require('fs');
+var MongoClient = require('mongodb').MongoClient;
 
 var app = Express();
 var port = 8585;
+
+var url = 'mongodb://localhost:27017/witekio-coffee';
+var db = null;
+var usersCollection = null;
+MongoClient.connect(url, function(err, database) {
+  if (err) {
+    console.log(err);
+  }
+  else {
+    db = database;
+    usersCollection = db.collection('users');
+  }
+});
 
 /**
 * @brief Returns true if query is authorized
@@ -75,8 +89,36 @@ app.post('/flashed', function (req, res) {
   currentUser.id = req.body.id;
   currentUser.name = req.body.name;
   currentUser.email = req.body.email;
-  currentUser.news = req.body.news;
+
+  console.log("Ok?");
+  usersCollection.update({id:currentUser.id}, currentUser, {upsert: true});
   console.log(currentUser.id);
+})
+
+app.post('/api/updateUser', function (req, res) {
+  if (!req.body.id)
+    return;
+
+  currentUser.id = req.body.id;
+  currentUser.name = req.body.name;
+  currentUser.email = req.body.email;
+
+  console.log("Ok?");
+  usersCollection.update({id:currentUser.id}, {$set: {currentUser}}, {upsert: true});
+  console.log(currentUser.id);
+})
+
+app.post('/api/addBeverageToUser', function (req, res) {
+    console.log("addBeverage");
+  if (!currentUser.id)
+    return;
+
+  var beverageId = req.body.beverageId;
+  var beverageName = req.body.beverageName;
+  var timestamp = Date.now();
+
+  usersCollection.update({id:currentUser.id}, {$push:{beverages:{id: beverageId, name: beverageName, date: timestamp}}}, {upsert: true});
+  console.log("add ok ? " + currentUser.id);
 })
 
 /**
