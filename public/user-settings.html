@@ -18,14 +18,20 @@
 
 <body>
 <header>
-	<h1>Witekio Coffee</h1>
+	<h2 id="header-title">Witekio Coffee</h2>
 </header>
+
 <div id="page" class="col-md-12">
+
+	<!-- Title -->
+	<h3>Please choose your coffee on the machine.</h3>
+</br></br>
+
 	<form id="settings-form" class="form-horizontal">
 	<fieldset>
 
 	<!-- Title -->
-	<legend>User settings</legend>
+	<legend>Settings</legend>
 
 	<!-- Coffee liking -->
 	<!-- <div class="form-group">
@@ -70,7 +76,7 @@
 
 	<!-- News -->
 	<div id="news" class="form-group">
-	  <label class="col-md-4 control-label" for="news">News feeds</label>
+	  <label class="col-md-4 control-label" for="news">Interests</label>
 	  <div class="col-md-4">
 	  <div class="checkbox">
 		<label for="news-0">
@@ -111,9 +117,28 @@
 	</form>
 </div>
 	<script>
+		function guid() {
+		  function s4() {
+		    return Math.floor((1 + Math.random()) * 0x10000)
+		      .toString(16)
+		      .substring(1);
+		  }
+		  return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+		    s4() + '-' + s4() + s4() + s4();
+		}
+
+		if (!localStorage.id)
+			localStorage.id = guid();
+
 		$(window).on('load', function() {
-			if (localStorage.name)
+			if (localStorage.name) {
 				$("#name").val(localStorage.name);
+				$("#header-title").text("Hello " + localStorage.name + " !")
+			}
+			else {
+				$("#header-title").text("Hello stranger !")
+			}
+
 			if (localStorage.email)
 				$("#email").val(localStorage.email);
 
@@ -125,7 +150,8 @@
 				}
 			});
 
-			$.post("/flashed", {name: localStorage.name,
+			$.post("/flashed", {id: localStorage.id,
+								name: localStorage.name,
 								email: localStorage.email,
 								news: localStorage.news})
 		});

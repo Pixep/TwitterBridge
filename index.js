@@ -63,18 +63,25 @@ app.get('/qrcode', function (req, res) {
   qrcode.pipe(res);
 })
 
+/**
+ * @brief Save user infos
+ */
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
-
 var currentUser = {};
-currentUser.name = "Dunno!";
+currentUser.name = "";
+
 app.post('/flashed', function (req, res) {
+  currentUser.id = req.body.id;
   currentUser.name = req.body.name;
   currentUser.email = req.body.email;
   currentUser.news = req.body.news;
-  console.log(currentUser.name);
+  console.log(currentUser.id);
 })
 
+/**
+ * @brief Get user infos
+ */
 app.get('/api/currentUser', function (req, res) {
   res.json(currentUser);
 })
