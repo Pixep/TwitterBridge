@@ -63,6 +63,9 @@ process.env.LOCAL_MEDIA_URL = 'http://' + process.env.SERVER_NAME + localMediaPa
 // Serve videos as Gif
 app.use('/'+localMediaPath, Express.static(MediaProxy.mediaCache.path));
 
+// Public folder
+app.use(Express.static('public'));
+
 // Run the server
 app.listen(port, function () {
     console.log('Twitter proxy running on ' + port + ' !')

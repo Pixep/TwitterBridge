@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Title of the document</title>
+
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+	
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+</head>
+
+<body>
+	<form class="form-horizontal">
+	<fieldset>
+
+	<!-- Form Name -->
+	<legend>Witekio's Coffee</legend>
+
+	<!-- Multiple Radios (inline) -->
+	<div class="form-group">
+	  <label class="col-md-4 control-label" for="review">How did you like your coffee ?</label>
+	  <div class="col-md-4"> 
+		<label class="radio-inline" for="review-0">
+		  <input type="radio" name="review" id="review-0" value="1" checked="checked">
+		  Yuck !
+		</label> 
+		<label class="radio-inline" for="review-1">
+		  <input type="radio" name="review" id="review-1" value="2">
+		  Meh
+		</label> 
+		<label class="radio-inline" for="review-2">
+		  <input type="radio" name="review" id="review-2" value="3">
+		  Not bad
+		</label> 
+		<label class="radio-inline" for="review-3">
+		  <input type="radio" name="review" id="review-3" value="4">
+		  Good !
+		</label>
+	  </div>
+	</div>
+
+	<!-- Text input-->
+	<div class="form-group">
+	  <label class="col-md-4 control-label" for="name">Your name</label>  
+	  <div class="col-md-4">
+	  <input id="name" name="name" type="text" placeholder="name" class="form-control input-md">
+		
+	  </div>
+	</div>
+
+	<!-- Text input-->
+	<div class="form-group">
+	  <label class="col-md-4 control-label" for="email">Your email</label>  
+	  <div class="col-md-4">
+	  <input id="email" name="email" type="text" placeholder="email@domain.fr" class="form-control input-md">
+		
+	  </div>
+	</div>
+
+	<!-- Multiple Checkboxes -->
+	<div class="form-group">
+	  <label class="col-md-4 control-label" for="news">News feeds</label>
+	  <div class="col-md-4">
+	  <div class="checkbox">
+		<label for="news-0">
+		  <input type="checkbox" name="news" id="news-0" value="1">
+		  Video Games
+		</label>
+		</div>
+	  <div class="checkbox">
+		<label for="news-1">
+		  <input type="checkbox" name="news" id="news-1" value="2">
+		  Embedded
+		</label>
+		</div>
+	  <div class="checkbox">
+		<label for="news-2">
+		  <input type="checkbox" name="news" id="news-2" value="3">
+		  Software programming
+		</label>
+		</div>
+	  <div class="checkbox">
+		<label for="news-3">
+		  <input type="checkbox" name="news" id="news-3" value="4">
+		  Web development
+		</label>
+		</div>
+	  </div>
+	</div>
+
+	<!-- Button -->
+	<div class="form-group">
+	  <label class="col-md-4 control-label" for="save"></label>
+	  <div class="col-md-4">
+		<button id="save" name="save" class="btn btn-primary">Save</button>
+	  </div>
+	</div>
+
+	</fieldset>
+	</form>
+</body>
+</html>
