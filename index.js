@@ -1,4 +1,5 @@
 var Express = require('express');
+var bodyParser = require('body-parser');
 var qr = require('qr-image');
 var MediaProxy = require('./libs/media-proxy');
 var Timeline = require('./libs/timeline');
@@ -65,7 +66,7 @@ app.get('/qrcode', function (req, res) {
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
-var currentUser;
+var currentUser = {};
 currentUser.name = "Dunno!";
 app.post('/flashed', function (req, res) {
   currentUser.name = req.body.name;

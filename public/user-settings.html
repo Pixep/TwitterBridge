@@ -125,7 +125,7 @@
 				}
 			});
 
-			$.post("//flashed", {name: localStorage.name,
+			$.post("/flashed", {name: localStorage.name,
 								email: localStorage.email,
 								news: localStorage.news})
 		});
@@ -139,6 +139,8 @@
 			if (emailField.val() !== "")
 				localStorage.email = emailField.val();
 
+			if (!localStorage.news)
+				localStorage.news = {};
 			$('#news input').each(function(i, obj) {
 				if (obj.checked)
 					localStorage.news[obj.id] = true;
