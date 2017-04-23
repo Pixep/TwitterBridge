@@ -86,8 +86,11 @@ var currentUser = {};
 currentUser.name = "";
 
 app.post('/api/updateUser', function (req, res) {
-  if (!req.body.id)
+  if (!req.body.id) {
+    console.log("updateUser: user id not set!");
+    res.sendStatus(400);
     return;
+  }
 
   currentUser.id = req.body.id;
   currentUser.name = req.body.name;
@@ -100,9 +103,11 @@ app.post('/api/updateUser', function (req, res) {
 })
 
 app.post('/api/addBeverageToUser', function (req, res) {
-    console.log("addBeverage");
-  if (!currentUser.id)
+  if (!currentUser.id) {
+    console.log("addBeverageToUser: currentUser not set!");
+    res.sendStatus(400);
     return;
+  }
 
   var beverageId = req.body.beverageId;
   var beverageName = req.body.beverageName;
@@ -125,6 +130,28 @@ app.get('/api/users', function (req, res) {
  */
 app.get('/api/currentUser', function (req, res) {
   res.json(currentUser);
+})
+
+/**
+ * @brief Get user infos
+ */
+app.post('/api/userInfo', function (req, res) {
+  var userId = req.body.id
+  if (!userId)
+    res.close();
+
+  var beverages = usersCollection.find({id: userId}, {beverages:1, _id:0});
+  beverages.toArray(function(err, docs) {
+    if (docs.length === 0)
+      res.sendStatus(200);
+
+    var beverages = docs[0].beverages;
+    var result = {
+      count: beverages ? beverages.length : 0,
+      latest: docs ? beverages[beverages.length-1].name : ""
+    };
+    res.json(result);
+  });
 })
 
 Timeline.assertEnvironmentSet();
