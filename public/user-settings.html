@@ -150,7 +150,7 @@
 				}
 			});
 
-			$.post("/flashed", {id: localStorage.id,
+			$.post("/api/updateUser", {id: localStorage.id,
 								name: localStorage.name,
 								email: localStorage.email,
 								news: localStorage.news})

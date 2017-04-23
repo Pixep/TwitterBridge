@@ -18,7 +18,7 @@ MongoClient.connect(url, function(err, database) {
   }
   else {
     db = database;
-    usersCollection = db.collection('users');
+    usersCollection = db.collection('customers');
   }
 });
 
@@ -85,16 +85,6 @@ app.use(bodyParser.json());
 var currentUser = {};
 currentUser.name = "";
 
-app.post('/flashed', function (req, res) {
-  currentUser.id = req.body.id;
-  currentUser.name = req.body.name;
-  currentUser.email = req.body.email;
-
-  console.log("Ok?");
-  usersCollection.update({id:currentUser.id}, currentUser, {upsert: true});
-  console.log(currentUser.id);
-})
-
 app.post('/api/updateUser', function (req, res) {
   if (!req.body.id)
     return;
@@ -104,8 +94,9 @@ app.post('/api/updateUser', function (req, res) {
   currentUser.email = req.body.email;
 
   console.log("Ok?");
-  usersCollection.update({id:currentUser.id}, {$set: {currentUser}}, {upsert: true});
+  usersCollection.update({id:currentUser.id}, {$set: {id: currentUser.id, name: currentUser.name, email: currentUser.email}}, {upsert: true});
   console.log(currentUser.id);
+  res.sendStatus(200);
 })
 
 app.post('/api/addBeverageToUser', function (req, res) {
@@ -119,7 +110,15 @@ app.post('/api/addBeverageToUser', function (req, res) {
 
   usersCollection.update({id:currentUser.id}, {$push:{beverages:{id: beverageId, name: beverageName, date: timestamp}}}, {upsert: true});
   console.log("add ok ? " + currentUser.id);
+  res.sendStatus(200);
 })
+
+app.get('/api/users', function (req, res) {
+  var results = usersCollection.find({});
+  results.toArray(function(err, docs) {
+    res.json(docs);	
+  });
+});
 
 /**
  * @brief Get user infos
