@@ -1,4 +1,5 @@
 var Express = require('express');
+var qr = require('qr-image');
 var MediaProxy = require('./libs/media-proxy');
 var Timeline = require('./libs/timeline');
 
@@ -50,6 +51,14 @@ app.get('/:pass/tweets', function (req, res) {
  */
 app.get('/tweetImage/*', function (req, res) {
    MediaProxy.serveImage(req, res);
+})
+
+/**
+ * @brief Returns the latest QR-code to use in the application
+ */
+app.get('/qrcode', function (req, res) {
+  var qrcode = qr.image('http://livemetronome.com/user-settings.html', { type: 'png' });
+  qrcode.pipe(res);
 })
 
 Timeline.assertEnvironmentSet();
