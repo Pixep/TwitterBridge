@@ -150,13 +150,11 @@
 				}
 			});
 
-			$.post("/api/updateUser", {id: localStorage.id,
-								name: localStorage.name,
-								email: localStorage.email,
-								news: localStorage.news})
 		});
 
-		$("#settings-form").on('submit', function() {
+		$("#settings-form").on('submit', function(e) {
+			e.preventDefault(e);
+
 			var nameField = $("#name");
 			if (nameField.val() !== "")
 				localStorage.name = nameField.val();
@@ -171,8 +169,13 @@
 				if (obj.checked)
 					localStorage.news[obj.id] = true;
 				else
-					localStorage.news.removeItem(obj.id);
+					localStorage.news[obj.id] = null;
 			});
+
+			$.post("/api/updateUser", {id: localStorage.id,
+								name: localStorage.name,
+								email: localStorage.email,
+								news: localStorage.news});	
 		});
 	</script>
 </body>
