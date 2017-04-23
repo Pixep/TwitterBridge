@@ -2,6 +2,7 @@ var Express = require('express');
 var qr = require('qr-image');
 var MediaProxy = require('./libs/media-proxy');
 var Timeline = require('./libs/timeline');
+var fs = require('fs');
 
 var app = Express();
 var port = 8585;
@@ -59,6 +60,22 @@ app.get('/tweetImage/*', function (req, res) {
 app.get('/qrcode', function (req, res) {
   var qrcode = qr.image('http://livemetronome.com/user-settings.html', { type: 'png' });
   qrcode.pipe(res);
+})
+
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.json());
+
+var currentUser;
+currentUser.name = "Dunno!";
+app.post('/flashed', function (req, res) {
+  currentUser.name = req.body.name;
+  currentUser.email = req.body.email;
+  currentUser.news = req.body.news;
+  console.log(currentUser.name);
+})
+
+app.get('/api/currentUser', function (req, res) {
+  res.json(currentUser);
 })
 
 Timeline.assertEnvironmentSet();

@@ -110,7 +110,6 @@
 	</fieldset>
 	</form>
 </div>
-
 	<script>
 		$(window).on('load', function() {
 			if (localStorage.name)
@@ -119,11 +118,16 @@
 				$("#email").val(localStorage.email);
 
 			$('#news input').each(function(i, obj) {
-				var newsValue = localStorage[obj.id];
-				console.log("newsValue " + newsValue);
-				if (typeof newsValue !== 'undefined' && newsValue)
-					obj.checked = true;
+				if (localStorage.news) {
+					var newsValue = localStorage.news[obj.id];
+					if (typeof newsValue !== 'undefined' && newsValue)
+						obj.checked = true;
+				}
 			});
+
+			$.post("//flashed", {name: localStorage.name,
+								email: localStorage.email,
+								news: localStorage.news})
 		});
 
 		$("#settings-form").on('submit', function() {
@@ -137,9 +141,9 @@
 
 			$('#news input').each(function(i, obj) {
 				if (obj.checked)
-					localStorage[obj.id] = true;
+					localStorage.news[obj.id] = true;
 				else
-					localStorage.removeItem(obj.id);
+					localStorage.news.removeItem(obj.id);
 			});
 		});
 	</script>
