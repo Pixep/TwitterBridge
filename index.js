@@ -84,8 +84,14 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 var currentUser = {};
 currentUser.name = "";
+var userResetTimeout;
 
 app.post('/api/setCurrentUser', function (req, res) {
+  if (currentUser.id) {
+    res.sendStatus(400);
+    return;
+  }
+
   if (!req.body.id) {
     console.log("updateUser: user id not set!");
     res.sendStatus(400);
@@ -105,6 +111,10 @@ app.post('/api/setCurrentUser', function (req, res) {
     
     console.log("User " + currentUser.name + " flashed with " + currentUser.lastBeverageId + " as last beverage");
   });
+
+  userResetTimeout = setTimeout(() => {
+    resetCurrentUser();
+  }, 60000);
 
   res.sendStatus(200);
 })
@@ -146,10 +156,14 @@ app.post('/api/addBeverageToUser', function (req, res) {
 })
 
 function resetCurrentUser() {
+  console.log("Reset user " + currentUser.name);
   currentUser.name = "";
   currentUser.id = "";
   currentUser.email = "";
   currentUser.lastBeverageId = -1;
+
+  if (userResetTimeout)
+    clearTimeout(userResetTimeout); 
 }
 
 app.get('/api/users', function (req, res) {
@@ -158,6 +172,15 @@ app.get('/api/users', function (req, res) {
     res.json(docs);	
   });
 });
+
+/**
+ * @brief Reset current user
+ */
+app.get('/api/resetCurrentUser', function (req, res) {
+  console.log("User disconnect request");
+  resetCurrentUser();
+  res.sendStatus(200);
+})
 
 /**
  * @brief Get user infos
