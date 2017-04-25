@@ -25,6 +25,8 @@
 
 	<!-- Title -->
 	<h3>Please choose your coffee on the machine.</h3>
+	<span id="user-info" style="display: none">
+	You already took <span id="beverage-count">X</span> beverages (Waow !), and your last was a <span id="last-beverage">X</span></span>
 </br></br>
 
 	<form id="settings-form" class="form-horizontal">
@@ -150,6 +152,16 @@
 				}
 			});
 
+			$.post("/api/userInfo", {id: localStorage.id}, function( data ) {
+				$("#beverage-count").text(data.count);
+				$("#last-beverage").text(data.latest);
+				$("#user-info").show();
+			});
+
+			$.post("/api/setCurrentUser", {id: localStorage.id,
+		 		name: localStorage.name,
+				email: localStorage.email,
+				news: localStorage.news});	
 		});
 
 		$("#settings-form").on('submit', function(e) {
@@ -173,9 +185,9 @@
 			});
 
 			$.post("/api/updateUser", {id: localStorage.id,
-								name: localStorage.name,
-								email: localStorage.email,
-								news: localStorage.news});	
+		 		name: localStorage.name,
+				email: localStorage.email,
+				news: localStorage.news});	
 		});
 	</script>
 </body>

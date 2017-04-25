@@ -85,6 +85,30 @@ app.use(bodyParser.json());
 var currentUser = {};
 currentUser.name = "";
 
+app.post('/api/setCurrentUser', function (req, res) {
+  if (!req.body.id) {
+    console.log("updateUser: user id not set!");
+    res.sendStatus(400);
+    return;
+  }
+
+  currentUser.id = req.body.id;
+  currentUser.name = req.body.name;
+  currentUser.email = req.body.email;
+  currentUser.lastBeverageId = -1;
+
+  var beverages = usersCollection.find({id: currentUser.id}, {beverages:1, _id:0});
+  beverages.toArray(function(err, docs) {
+    if (docs && docs.length > 0 && docs[0].beverages) {
+      currentUser.lastBeverageId = docs[0].beverages[docs[0].beverages.length-1].id;
+    }
+    
+    console.log("User " + currentUser.name + " flashed with " + currentUser.lastBeverageId + " as last beverage");
+  });
+
+  res.sendStatus(200);
+})
+
 app.post('/api/updateUser', function (req, res) {
   if (!req.body.id) {
     console.log("updateUser: user id not set!");
@@ -96,9 +120,9 @@ app.post('/api/updateUser', function (req, res) {
   currentUser.name = req.body.name;
   currentUser.email = req.body.email;
 
-  console.log("Ok?");
   usersCollection.update({id:currentUser.id}, {$set: {id: currentUser.id, name: currentUser.name, email: currentUser.email}}, {upsert: true});
-  console.log(currentUser.id);
+
+  console.log("User " + currentUser.name + " updated");
   res.sendStatus(200);
 })
 
@@ -114,9 +138,19 @@ app.post('/api/addBeverageToUser', function (req, res) {
   var timestamp = Date.now();
 
   usersCollection.update({id:currentUser.id}, {$push:{beverages:{id: beverageId, name: beverageName, date: timestamp}}}, {upsert: true});
-  console.log("add ok ? " + currentUser.id);
+  console.log("User " + currentUser.id + " took a " + beverageName + "#" + beverageId);
+
+  resetCurrentUser();
+
   res.sendStatus(200);
 })
+
+function resetCurrentUser() {
+  currentUser.name = "";
+  currentUser.id = "";
+  currentUser.email = "";
+  currentUser.lastBeverageId = -1;
+}
 
 app.get('/api/users', function (req, res) {
   var results = usersCollection.find({});
@@ -129,6 +163,7 @@ app.get('/api/users', function (req, res) {
  * @brief Get user infos
  */
 app.get('/api/currentUser', function (req, res) {
+  console.log("served currentUser");
   res.json(currentUser);
 })
 
@@ -142,10 +177,17 @@ app.post('/api/userInfo', function (req, res) {
 
   var beverages = usersCollection.find({id: userId}, {beverages:1, _id:0});
   beverages.toArray(function(err, docs) {
-    if (docs.length === 0)
+    if (!docs || docs.length === 0) {
       res.sendStatus(200);
+      return;
+    }
 
     var beverages = docs[0].beverages;
+    if (!beverages) {
+      res.sendStatus(200);
+      return;
+    }
+
     var result = {
       count: beverages ? beverages.length : 0,
       latest: docs ? beverages[beverages.length-1].name : ""
