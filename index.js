@@ -73,7 +73,7 @@ app.get('/tweetImage/*', function (req, res) {
  * @brief Returns the latest QR-code to use in the application
  */
 app.get('/qrcode', function (req, res) {
-  var qrcode = qr.image('http://livemetronome.com/user-settings.html', { type: 'png' });
+  var qrcode = qr.image('http://witekio-coffee.com/index.html', { type: 'png' });
   qrcode.pipe(res);
 })
 
