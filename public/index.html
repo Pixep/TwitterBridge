@@ -15,6 +15,9 @@
 	<!-- Our CSS -->
 	<link rel="stylesheet" href="css/bootstrap-flatly.min.css"> 
 	<link rel="stylesheet" href="css/global.css">
+	<!-- Our JS -->
+	<script src="js/main.js"></script>
+	<script src="js/settings.js"></script>
 </head>
 
 <body>
@@ -78,7 +81,7 @@
 	</div>
 
 	<!-- News -->
-	<div id="news" class="form-group">
+	<div id="news" class="form-group hidden">
 	  <label class="col-md-4 control-label" for="news">Interests</label>
 	  <div class="col-md-4">
 	  <div class="checkbox">
@@ -119,77 +122,5 @@
 	</fieldset>
 	</form>
 </div>
-	<script>
-		function guid() {
-		  function s4() {
-		    return Math.floor((1 + Math.random()) * 0x10000)
-		      .toString(16)
-		      .substring(1);
-		  }
-		  return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
-		    s4() + '-' + s4() + s4() + s4();
-		}
-
-		if (!localStorage.id)
-			localStorage.id = guid();
-
-		$(window).on('load', function() {
-			if (localStorage.name) {
-				$("#name").val(localStorage.name);
-				$("#header-title").text("Hello " + localStorage.name + " !")
-			}
-			else {
-				$("#header-title").text("Hello stranger !")
-			}
-
-			if (localStorage.email)
-				$("#email").val(localStorage.email);
-
-			$('#news input').each(function(i, obj) {
-				if (localStorage.news) {
-					var newsValue = localStorage.news[obj.id];
-					if (typeof newsValue !== 'undefined' && newsValue)
-						obj.checked = true;
-				}
-			});
-
-			$.post("/api/userInfo", {id: localStorage.id}, function( data ) {
-				$("#beverage-count").text(data.count);
-				$("#last-beverage").text(data.latest);
-				$("#user-info").show();
-			});
-
-			$.post("/api/setCurrentUser", {id: localStorage.id,
-		 		name: localStorage.name,
-				email: localStorage.email,
-				news: localStorage.news});	
-		});
-
-		$("#settings-form").on('submit', function(e) {
-			e.preventDefault(e);
-
-			var nameField = $("#name");
-			if (nameField.val() !== "")
-				localStorage.name = nameField.val();
-
-			var emailField = $("#email");
-			if (emailField.val() !== "")
-				localStorage.email = emailField.val();
-
-			if (!localStorage.news)
-				localStorage.news = {};
-			$('#news input').each(function(i, obj) {
-				if (obj.checked)
-					localStorage.news[obj.id] = true;
-				else
-					localStorage.news[obj.id] = null;
-			});
-
-			$.post("/api/updateUser", {id: localStorage.id,
-		 		name: localStorage.name,
-				email: localStorage.email,
-				news: localStorage.news});	
-		});
-	</script>
 </body>
 </html>
