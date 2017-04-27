@@ -5,6 +5,7 @@ var MediaProxy = require('./libs/media-proxy');
 var Timeline = require('./libs/timeline');
 var fs = require('fs');
 var MongoClient = require('mongodb').MongoClient;
+var path = require('path');
 
 var app = Express();
 var port = 8585;
@@ -12,6 +13,7 @@ var port = 8585;
 var url = 'mongodb://localhost:27017/witekio-coffee';
 var db = null;
 var usersCollection = null;
+var beveragesConsumptionCollection = null;
 MongoClient.connect(url, function(err, database) {
   if (err) {
     console.log(err);
@@ -19,6 +21,7 @@ MongoClient.connect(url, function(err, database) {
   else {
     db = database;
     usersCollection = db.collection('customers');
+    beveragesConsumptionCollection = db.collection('beveragesConsumption');
   }
 });
 
@@ -108,14 +111,13 @@ app.post('/api/setCurrentUser', function (req, res) {
     if (docs && docs.length > 0 && docs[0].beverages) {
       currentUser.lastBeverageId = docs[0].beverages[docs[0].beverages.length-1].id;
     }
-    
-    console.log("User " + currentUser.name + " flashed with " + currentUser.lastBeverageId + " as last beverage");
   });
 
   userResetTimeout = setTimeout(() => {
     resetCurrentUser();
   }, 60000);
 
+  console.log("User " + currentUser.name + " flashed");
   res.sendStatus(200);
 })
 
@@ -137,26 +139,27 @@ app.post('/api/updateUser', function (req, res) {
 })
 
 app.post('/api/addBeverageToUser', function (req, res) {
-  if (!currentUser.id) {
-    console.log("addBeverageToUser: currentUser not set!");
-    res.sendStatus(400);
-    return;
-  }
-
   var beverageId = req.body.beverageId;
   var beverageName = req.body.beverageName;
   var timestamp = Date.now();
 
-  usersCollection.update({id:currentUser.id}, {$push:{beverages:{id: beverageId, name: beverageName, date: timestamp}}}, {upsert: true});
-  console.log("User " + currentUser.id + " took a " + beverageName + "#" + beverageId);
+  beveragesConsumptionCollection.insertOne({id:beverageId, name:beverageName, price:0, date:timestamp}, function (err, res) {
+    if (err)
+      console.log("Failed to log beverage " + beverageName);
+    console.log("Logged beverage " + beverageName);
+  });
+
+  if (currentUser.id) {
+    usersCollection.update({id:currentUser.id}, {$push:{beverages:{id: beverageId, name: beverageName, date: timestamp}}}, {upsert: true});
+    console.log("User " + currentUser.name + "(" + currentUser.id + ") took a " + beverageName + "#" + beverageId);
+  }
 
   resetCurrentUser();
-
   res.sendStatus(200);
 })
 
 function resetCurrentUser() {
-  console.log("Reset user " + currentUser.name);
+  console.log("Disconnected user " + currentUser.name);
   currentUser.name = "";
   currentUser.id = "";
   currentUser.email = "";
@@ -165,6 +168,13 @@ function resetCurrentUser() {
   if (userResetTimeout)
     clearTimeout(userResetTimeout); 
 }
+
+app.get('/api/consumptions', function (req, res) {
+  var results = beveragesConsumptionCollection.find({});
+  results.toArray(function(err, docs) {
+    res.json(docs);
+  });
+});
 
 app.get('/api/users', function (req, res) {
   var results = usersCollection.find({});
@@ -177,7 +187,6 @@ app.get('/api/users', function (req, res) {
  * @brief Reset current user
  */
 app.get('/api/resetCurrentUser', function (req, res) {
-  console.log("User disconnect request");
   resetCurrentUser();
   res.sendStatus(200);
 })
@@ -186,7 +195,6 @@ app.get('/api/resetCurrentUser', function (req, res) {
  * @brief Get user infos
  */
 app.get('/api/currentUser', function (req, res) {
-  console.log("served currentUser");
   res.json(currentUser);
 })
 
@@ -231,7 +239,7 @@ process.env.LOCAL_MEDIA_URL = 'http://' + process.env.SERVER_NAME + localMediaPa
 app.use('/'+localMediaPath, Express.static(MediaProxy.mediaCache.path));
 
 // Public folder
-app.use(Express.static('public'));
+app.use(Express.static(path.join(__dirname, 'public')));
 
 // Run the server
 app.listen(port, function () {
