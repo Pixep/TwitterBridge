@@ -54,7 +54,13 @@ $().ready(function() {
 		$.post("/api/updateUser", {id: localStorage.id,
 			name: localStorage.name,
 			email: localStorage.email,
-			news: localStorage.news});	
+			news: localStorage.news})
+			.done(function() {
+				toastr.success("Settings saved !");
+			})
+			.fail(function() {
+				toastr.error("Failed to save settings");
+			});	
 	});
 });
 
