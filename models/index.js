@@ -5,6 +5,7 @@ var MongoClient = require('mongodb').MongoClient;
 var db = null;
 var usersCollection = null;
 var beveragesConsumptionCollection = null;
+var beveragesRatings = null;
 
 // Connect to db
 var url = 'mongodb://localhost:27017/witekio-coffee';
@@ -16,6 +17,7 @@ MongoClient.connect(url, function(err, database) {
     db = database;
     usersCollection = db.collection('customers');
     beveragesConsumptionCollection = db.collection('beveragesConsumption');
+    beveragesRatingsCollection = db.collection('beveragesRatings');
   }
 });
 
@@ -109,6 +111,9 @@ module.exports = {
   consumptions: function(callback) {
     var results = beveragesConsumptionCollection.find({});
     results.toArray(function(err, docs) {
+      if (err)
+        console.log("consumptions: " + err);
+
       callback(docs);
     });
   },
@@ -116,6 +121,40 @@ module.exports = {
   users: function(callback) {
     var results = usersCollection.find({});
     results.toArray(function(err, docs) {
+      callback(docs);
+    });
+  },
+
+  rateBeverage: function(userId, beverageId, rating, comment, callback) {
+    if (!userId || !beverageId || !rating) {
+      console.log("rateBeverage: user id, beverage id or rating not set!");
+      
+      if (callback)
+        callback(true);
+      return;
+    }
+    
+    rating = parseInt(rating);
+
+    var timestamp = Date.now();
+    beveragesRatingsCollection.insertOne({beverageId: beverageId, userId: userId, rating: rating, comment: comment, date: timestamp}, function(err, res) {
+      if (err) {
+        console.log("Failed to insert rating for beverage id" + beverageId);
+        if (callback) callback(true);
+      }
+      else {
+        console.log("Beverage id " + beverageId + " rated " + rating);
+        if (callback) callback(false);
+      }
+    });
+  },
+
+  beveragesRatings: function(callback) {
+    var results = beveragesRatingsCollection.aggregate([{$group: {_id : "$beverageId", count: { $sum : 1 }, average: { $avg: "$rating" }}}]);
+    results.toArray(function(err, docs) {
+      if (err)
+        console.log("beveragesRatings: " + err);
+
       callback(docs);
     });
   },

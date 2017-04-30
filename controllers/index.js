@@ -82,7 +82,7 @@ module.exports = {
     });
 
     /**
-     * @brief Get user infos
+     * @brief Get current user
      */
     app.get('/api/currentUser', function (req, res) {
       res.json(models.currentUser());
@@ -100,6 +100,23 @@ module.exports = {
 
         res.json(results);
       })
+    });
+
+    /**
+     * @brief Get user infos
+     */
+    app.get('/api/beveragesRatings', function (req, res) {
+      models.beveragesRatings( function(results) {
+        res.json(results);
+      });
+    });
+
+    /**
+     * @brief Rate a beverage
+     */
+    app.post('/api/rateBeverage', function (req, res) {
+      models.rateBeverage(req.body.id, req.body.beverageId, req.body.rating, req.body.comment);
+      res.sendStatus(200);
     });
   }
 }
