@@ -1,14 +1,17 @@
 var Express = require('express');
 var bodyParser = require('body-parser');
-var qr = require('qr-image');
-var MediaProxy = require('./libs/media-proxy');
-var Timeline = require('./libs/timeline');
 var fs = require('fs');
 var MongoClient = require('mongodb').MongoClient;
 var path = require('path');
 
 var app = Express();
 var port = 8585;
+
+var MediaProxy = require('./libs/media-proxy');
+var Timeline = require('./libs/timeline');
+var controllers = require('./controllers');
+
+controllers.setup(app);
 
 var url = 'mongodb://localhost:27017/witekio-coffee';
 var db = null;
@@ -70,14 +73,6 @@ app.get('/:pass/tweets', function (req, res) {
  */
 app.get('/tweetImage/*', function (req, res) {
    MediaProxy.serveImage(req, res);
-})
-
-/**
- * @brief Returns the latest QR-code to use in the application
- */
-app.get('/qrcode', function (req, res) {
-  var qrcode = qr.image('http://witekio-coffee.com/index.html', { type: 'png' });
-  qrcode.pipe(res);
 })
 
 /**
