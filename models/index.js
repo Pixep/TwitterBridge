@@ -114,7 +114,7 @@ module.exports = {
       if (err)
         console.log("consumptions: " + err);
 
-      callback(docs);
+      callback(err, docs);
     });
   },
 

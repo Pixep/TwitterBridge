@@ -56,8 +56,8 @@ module.exports = {
      * @brief Get coffee consumptions
      */
     app.get('/api/consumptions', function (req, res) {
-      models.consumptions(function(results) {
-        if (!results) {
+      models.consumptions(function(err, results) {
+        if (err) {
           res.sendStatus(400);
           return;
         }
