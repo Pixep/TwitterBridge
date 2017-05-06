@@ -1,14 +1,16 @@
-var Express = require('express');
+// Dependencies
 var fs = require('fs');
 var path = require('path');
 
-var app = Express();
+// Express
+var express = require('express');
+var app = express();
 var port = 8585;
 
-var MediaProxy = require('./libs/media-proxy');
-var Timeline = require('./libs/timeline');
+// Internal modules
+var mediaProxy = require('./libs/media-proxy');
+var timeline = require('./libs/timeline');
 var controllers = require('./controllers');
-
 controllers.setup(app);
 
 /**
@@ -36,12 +38,12 @@ app.get('/:pass/tweets', function (req, res) {
     maxTweets: 20,
     shuffleTweets: true
   }
-  Timeline.getTimeline(params, function(error, timeline) {
+  timeline.getTimeline(params, function(error, timeline) {
     if (timeline == undefined) {
       res.send('');
     }
 
-    // Copy media of retweets/quotes to the tweet itself
+    // Censored ! :)
     for (var i = 0; i < timeline.length; i++) {
       timeline[i].user.name = timeline[i].user.name.replace("Internet of Shit", "Internet of Stuff");
     }
@@ -55,10 +57,10 @@ app.get('/:pass/tweets', function (req, res) {
  * @return Twitter target image through nodeJS
  */
 app.get('/tweetImage/*', function (req, res) {
-   MediaProxy.serveImage(req, res);
+   mediaProxy.serveImage(req, res);
 })
 
-Timeline.assertEnvironmentSet();
+timeline.assertEnvironmentSet();
 
 if ( ! process.env.SERVER_NAME.endsWith('/'))
   process.env.SERVER_NAME = process.env.SERVER_NAME + '/';
@@ -67,10 +69,10 @@ var localMediaPath = 'video';
 process.env.LOCAL_MEDIA_URL = 'http://' + process.env.SERVER_NAME + localMediaPath + '/';
 
 // Serve videos as Gif
-app.use('/'+localMediaPath, Express.static(MediaProxy.mediaCache.path));
+app.use('/'+localMediaPath, express.static(mediaProxy.mediaCache.path));
 
 // Public folder
-app.use(Express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Run the server
 app.listen(port, function () {
