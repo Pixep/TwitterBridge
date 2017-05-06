@@ -70,8 +70,14 @@ module.exports = {
      * @brief List all users
      */
     app.get('/api/users', function (req, res) {
-      var results = models.users();
-      res.json(results);
+      var results = models.users(function(err, results) {
+        if (err) {
+          res.sendStatus(400);
+          return;
+        }
+
+        res.json(results);
+      });
     });
 
     /**

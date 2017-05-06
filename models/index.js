@@ -121,7 +121,7 @@ module.exports = {
   users: function(callback) {
     var results = usersCollection.find({});
     results.toArray(function(err, docs) {
-      callback(docs);
+      callback(err, docs);
     });
   },
 
