@@ -61,6 +61,6 @@ typings/
 tmp
 
 # Custom run scripts
-startNode.sh
-testNode.sh
+start.sh
+test.sh
 setup-env.sh

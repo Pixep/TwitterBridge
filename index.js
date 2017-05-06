@@ -5,7 +5,7 @@ var path = require('path');
 // Express
 var express = require('express');
 var app = express();
-var port = 8585;
+var port = 3601;
 
 // Internal modules
 var mediaProxy = require('./libs/media-proxy');
@@ -70,9 +70,6 @@ process.env.LOCAL_MEDIA_URL = 'http://' + process.env.SERVER_NAME + localMediaPa
 
 // Serve videos as Gif
 app.use('/'+localMediaPath, express.static(mediaProxy.mediaCache.path));
-
-// Public folder
-app.use(express.static(path.join(__dirname, 'public')));
 
 // Run the server
 app.listen(port, function () {
