@@ -70,7 +70,7 @@ if ( ! process.env.SERVER_NAME.endsWith('/'))
 app.use('/api/video', express.static(mediaProxy.mediaCache.path));
 
 // Run the server
-app.listen(port, function () {
+app.listen(port, 'localhost', function () {
     console.log('Twitter proxy running on ' + port + ' !')
 })
 
