@@ -150,7 +150,7 @@ var mediaCache = new MediaCache('./tmp/videos/');
 /**
 * @brief Proxies an image from tweeter
 */
-function _serveImage (req, res) {
+function _serveImage (req, res, baseUrl) {
   var proxyUrl = req.url;
 
   // Make sure we only serve images
@@ -162,7 +162,7 @@ function _serveImage (req, res) {
   else
   {
     console.log('Proxying: ' + proxyUrl)
-    proxyUrl = proxyUrl.replace('/tweetImage/', 'http://')
+    proxyUrl = proxyUrl.replace(baseUrl, 'http://')
 
     request.get(proxyUrl).pipe(res)
   }

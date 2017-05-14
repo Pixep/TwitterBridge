@@ -11,7 +11,7 @@ module.exports = {
     /**
      * @brief Returns the latest QR-code to use in the application
      */
-    app.get('/qrcode', function (req, res) {
+    app.get('/api/qrcode', function (req, res) {
       var qrcode = models.qrcodeImage();
       qrcode.pipe(res);
     });

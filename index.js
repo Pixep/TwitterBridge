@@ -17,14 +17,14 @@ controllers.setup(app);
 * @brief Returns true if query is authorized
 */
 function queryAuthorized (req) {
-  return (req.params.pass == "1645328")
+  return true;
 }
 
 /**
  * @brief Twitter timeline
  * @return Twitter timeline content in JSON
  */
-app.get('/:pass/tweets', function (req, res) {
+app.get('/api/tweets', function (req, res) {
   if ( !queryAuthorized(req))
   {
     res.end();
@@ -36,7 +36,8 @@ app.get('/:pass/tweets', function (req, res) {
     removeRetweets: false,
     removeQuotedTweets: false,
     maxTweets: 20,
-    shuffleTweets: true
+    shuffleTweets: true,
+    cachedVideosUrl: "http://witekio-coffee.com/api/video"
   }
   timeline.getTimeline(params, function(error, timeline) {
     if (timeline == undefined) {
@@ -56,8 +57,8 @@ app.get('/:pass/tweets', function (req, res) {
  * @brief Twitter image proxy
  * @return Twitter target image through nodeJS
  */
-app.get('/tweetImage/*', function (req, res) {
-   mediaProxy.serveImage(req, res);
+app.get('/api/tweetImage/*', function (req, res) {
+   mediaProxy.serveImage(req, res, "/api/tweetImage/");
 })
 
 timeline.assertEnvironmentSet();
@@ -65,13 +66,18 @@ timeline.assertEnvironmentSet();
 if ( ! process.env.SERVER_NAME.endsWith('/'))
   process.env.SERVER_NAME = process.env.SERVER_NAME + '/';
 
-var localMediaPath = 'video';
-process.env.LOCAL_MEDIA_URL = 'http://' + process.env.SERVER_NAME + localMediaPath + '/';
-
 // Serve videos as Gif
-app.use('/'+localMediaPath, express.static(mediaProxy.mediaCache.path));
+app.use('/api/video', express.static(mediaProxy.mediaCache.path));
 
 // Run the server
 app.listen(port, function () {
     console.log('Twitter proxy running on ' + port + ' !')
 })
+
+process.on('uncaughtException', function(err) {
+    if(err.errno === 'EADDRINUSE')
+         console.log("Address or port is already in use by another proccess: " + err);
+    else
+         console.log(err);
+    process.exit(1);
+});

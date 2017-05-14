@@ -28,7 +28,7 @@ function _assertEnvironmentSet () {
           "TWITTER_ACCESS_TOKEN_KEY, TWITTER_ACCESS_TOKEN_SECRET");
 }
 
-function _includeVideoAsGif(tweet) {
+function _includeVideoAsGif(tweet, videosBaseUrl) {
   for (var i = 0; i < 3; i++) {
     var extendedEntities = null;
 
@@ -57,7 +57,7 @@ function _includeVideoAsGif(tweet) {
 
           // Add URL and return on success
           if (mediaUrl && mediaUrl.endsWith('.mp4')) {
-            tweet.animated_gif_url = process.env.LOCAL_MEDIA_URL + MediaProxy.mediaCache.videoAsGif(mediaUrl);
+            tweet.animated_gif_url = videosBaseUrl + '/' + MediaProxy.mediaCache.videoAsGif(mediaUrl);
             return;
           }
         }
@@ -87,6 +87,7 @@ function _getTimeline (timelineParams, callback) {
   timelineParams.removeQuotedTweets = timelineParams.removeQuotedTweets || false;
   timelineParams.maxTweets = timelineParams.maxTweets || 20;
   timelineParams.shuffleTweets = timelineParams.shuffleTweets || false;
+  timelineParams.cachedVideosUrl = timelineParams.cachedVideosUrl || ""
 
   _assertEnvironmentSet();
 
@@ -108,7 +109,7 @@ function _getTimeline (timelineParams, callback) {
 
     for (var i = 0; i < tweets.length; ++i) {
       _formatTweet(tweets[i]);
-      _includeVideoAsGif(tweets[i]);
+      _includeVideoAsGif(tweets[i], timelineParams.cachedVideosUrl);
     }
 
     // Remove tweets to match the maximum set
